@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 void rot_encrypt(const char *message, int key); //limit of 200 character message, can be increased.
-
+hello
 int main() {
 	const char message[] = "WE SHOULD ATTACK NOW"; //Termporary measure to input an example message.
 	printf("Select option (1-6)\n1 for rotation encryption.\n2 for decryption of rotation cipher given key.\n3 for substitution encryption. \n4 for decryption of substitution given key. \n5 for decryption of rotation without key. \n6 for decryption of substitution without key. \nResponse: ");
