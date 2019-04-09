@@ -1,16 +1,25 @@
 #include <stdio.h>
 
-char rot_encrypt(char letter, int key); //limit of 200 character message, can be increased.
+char rot_cipher(char letter, int key); //Used for encryption and decryption of rotation cipher with key.
+char sub_encrypt(char letter, const char *key); //Used for encryption of substitution cipher with key.
+char sub_decrypt(char letter, const char *key); //Used for decryption of substitution cipher with key.
 
 int main() {
 	int index = 0; //Used in each case to iterate through letters in input_string.
-	char letter; //Will become each subsequent letter of input string in each case.
-	const char input_string[] = "WE SHOULD ATTACK NOW"; //Temporary measure to input an example message.
-	//const char input_string[] = "ZH VKRXOG DWWDFN QRZ"; //Temporary measure to input example coded message.
-	int key = 3; //Temporary measure to input key for rotation cipher.
+	char letter; //Will become each subsequent letter of input string in each case. 
+	int key; //Amount shifted along in rotation cipher (encryption or decryption)
+	//const char input_string[200] = {0}; //This becomes length limit to input.
+	char output_string[200] = {0}; //This value is the limit to message length
 	
-	printf("Select option (1-6)\n1 for rotation encryption.\n2 for decryption of rotation cipher given key.\n3 for substitution encryption. \n4 for decryption of substitution given key. \n5 for decryption of rotation without key. \n6 for decryption of substitution without key. \nResponse: ");
-	//Above line prompts use for a choice of the 6 operations this program performs.
+	
+	const char input_string[] = "WE SHOULD ATTACK NOW"; //Temporary measure to input an example message.
+	//const char input_string[] = "NY GKCPMX JFFJZU DCN"; //Temporary measure to input an example sub coded message.
+	//const char input_string[] = "ZH VKRXOG DWWDFN QRZ"; //Temporary measure to input example rot coded message.
+	key = 3; //Temporary measure to input key for rotation cipher.
+	const char sub_key[26] = "JBZXYWVKAEUMLDCTIHGFPONSRQ"; //Temporary measure. Reordered alphabet used to scramble substitution cipher messages.
+	
+	printf("Select option (1-6)\n1 for rotation cipher encryption.\n2 for decryption of rotation cipher given key.\n3 for substitution cipher encryption. \n4 for decryption of substitution cipher given key. \n5 for decryption of rotation cipher without key. \n6 for decryption of substitution cipher without key. \nResponse: ");
+	//Above line prompts user for a choice of the 6 operations this program performs.
 	int menu_response;
 	scanf("%d", &menu_response); //User's response is recorded in variable 'menu_response'.
 	switch(menu_response) {		//switch() only runs code under case corresponding to menu_response value.
@@ -18,49 +27,66 @@ int main() {
 		case 1: 
 			//const char message[] = "WE SHOULD KILL CAESER";
 			printf("For the moment the message is %s, and the key is %d.\n", input_string, key);
-			char en_message[200]; //This value is the limit to message length.
+			//printf("Enter message (size limit 200 characters) to be encrypted: "); //Remember to change this prompt if size limit changed.
+			//scanf("%[^\n]s", &input_string);
+			//printf("%s\n", input_string);
+			//printf("Enter number of places letters will be shifted along i.e. key (0<key<26): ");
+			//scanf("%d", &key);
 			index = 0; //index is counter to iterate through message letters in WHILE.
-			//int key = 3;
 			letter = input_string[index]; //letter now becomes the first letter in message.
 			while(letter) { //Implicitly means while (letter != 0). Because last char in any string is NULL, this will ENDWHILE at end of string.
-				en_message[index] = rot_encrypt(letter, key);
+				output_string[index] = rot_cipher(letter, key);
 				index++;
 				letter = input_string[index];
 			}
-			//Below just prints resultant string.
-			index = 0;
-			letter = en_message[index];
-			while (letter) {
-				printf("%c", letter);
-				index++;
-				letter = en_message[index];
-			}
+			printf("Encrypted version: %s", output_string); //Just prints resultant string.
 			break;
 		case 2:
 			printf("For the moment the coded message is %s, and the key is %d.\n", input_string, key);
-			char message[200]; //This value is the limit to message length.
+			//char message[200]; //This value is the limit to message length.
 			key = -key; //Since encryption and decryption of rotation cipher are only distinguished by whether key is added or subtracted,
 						//same function can be used for decryption once key has been made negative.
 			index = 0; //index is counter to iterate through message letters in WHILE. 
 			letter = input_string[index]; //letter now becomes the first letter in message.
 			while(letter) { //Implicitly means while (letter != 0). Because last char in any string is NULL, this will ENDWHILE at end of string.
-				message[index] = rot_encrypt(letter, key);
+				output_string[index] = rot_cipher(letter, key);
 				index++;
 				letter = input_string[index];
 			}
-			//Below just prints resultant string.
-			index = 0;
-			letter = message[index];
-			while (letter) {
-				printf("%c", letter);
-				index++;
-				letter = message[index];
-			}			
+			printf("Decrypted version: %s", output_string); //Just prints resultant string.		
 			break;
-		case 3: //call appropriate function.
-		case 4: //call appropriate function.
+		case 3: 
+			//const char input_string[] = "WE SHOULD ATTACK NOW";
+			//const char input_string[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			//const char input_string[] = "ABCDETUVWXYZ";
+			//const char sub_key[] = "ZXYWVUTSRQPONMLKJIHGFEDCBA";
+			//const char sub_key[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			
+			printf("For the moment message is '%s' and key is '%s'.\n", input_string, sub_key);
+			index = 0; //Counter to iterate through letters in message.
+			letter = input_string[index]; //letter set to first character in message.
+			while(letter) {
+				output_string[index] = sub_encrypt(letter, sub_key);
+				index++;
+				letter = input_string[index];
+			}
+			printf("Encrypted version: %s\n", output_string); //Prints resultant string	
+			break;
+		case 4: 
+			printf("For the moment coded message is '%s' and key is '%s'.\n", input_string, sub_key);
+			index = 0; //Counter to iterate through letters in input_string.
+			letter = input_string[index]; //letter set to first character in input_string.
+			while(letter) {
+				output_string[index] = sub_decrypt(letter, sub_key);
+				index++;
+				letter = input_string[index];
+			}
+			printf("Decrypted version: %s\n", output_string); //Prints resultant string.
+			break;
 		case 5: //call appropriate function.
+			break;
 		case 6: //call appropriate function.
+			break;
 		default: 
 			printf("Error: enter number between 1 and 6.");
 	}
@@ -82,7 +108,7 @@ file, process and write to a new file one letter at a time.
 This function is used to both encrypt and decrypt rotation
 ciphers, since the two operations are so similar. For 
 decryption, key is made negative before the function is run.*/
-char rot_encrypt(char letter, int key) { //'letter' is letter to be encrypted, 'key' is distance letters will shift along alphabet.
+char rot_cipher(char letter, int key) { //'letter' is letter to be encrypted, 'key' is distance letters will shift along alphabet.
 	
 	if (letter == 32)			//This if() ensures that spaces remain unchanged.
 		return 32;
@@ -92,5 +118,30 @@ char rot_encrypt(char letter, int key) { //'letter' is letter to be encrypted, '
 	    //'rotation' back into alphabet, then converts back to CAPS ASCII. Also adds
 		//26 to ensure term modulus affects is positive.
 		return en_letter;
+	}
+}
+
+char sub_encrypt(char letter, const char *key) {
+	if (letter == ' ') //Ensures that spaces remain unchanged (note that using ' ' and 32 produce same result).
+		return ' ';
+	else {
+		int letter_index; //'letter_index' becomes int (0-25) representing letter's position in alphabet, e.g. 0 = A, 1 = B, etc..
+		letter_index = (letter - 65); //This works becuase in ASCII A = 65, B = 66, etc..
+		return key[letter_index]; //The letter in key holding the position 'letter' does in alphabet is returned.
+	}
+}
+
+char sub_decrypt(char letter, const char *key) {
+	if (letter == ' ') //Ensures that spaces remain unchanged.
+		return ' ';
+	else {
+		int index = 0; //Used as counter to iterate through checking each character in 'key' to find the letter matching 'letter'.
+		char letter_in_key = key[0]; //letter_in_key becomes each character in key.
+		while (letter_in_key) { //Will evaluate false when letter is null, i.e. at end of string.
+			if (letter_in_key == letter)
+				return (index + 65);
+			index++;
+			letter_in_key = key[index];
+		}
 	}
 }
