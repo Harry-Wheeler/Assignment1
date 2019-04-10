@@ -12,9 +12,9 @@ int main() {
 	char output_string[200] = {0}; //This value is the limit to message length
 	
 	
-	const char input_string[] = "WE SHOULD ATTACK NOW"; //Temporary measure to input an example message.
-	//const char input_string[] = "NY GKCPMX JFFJZU DCN"; //Temporary measure to input an example sub coded message.
-	//const char input_string[] = "ZH VKRXOG DWWDFN QRZ"; //Temporary measure to input example rot coded message.
+	//const char input_string[] = "WE should ATTACK NOW"; //Temporary measure to input an example message.
+	const char input_string[] = "NY GkcPMX JFfJZU DCN"; //Temporary measure to input an example sub coded message.
+	//const char input_string[] = "ZH VKRXOG DwwDfN QRZ"; //Temporary measure to input example rot coded message.
 	key = 3; //Temporary measure to input key for rotation cipher.
 	const char sub_key[26] = "JBZXYWVKAEUMLDCTIHGFPONSRQ"; //Temporary measure. Reordered alphabet used to scramble substitution cipher messages.
 	
@@ -109,39 +109,38 @@ This function is used to both encrypt and decrypt rotation
 ciphers, since the two operations are so similar. For 
 decryption, key is made negative before the function is run.*/
 char rot_cipher(char letter, int key) { //'letter' is letter to be encrypted, 'key' is distance letters will shift along alphabet.
-	
-	if (letter == 32)			//This if() ensures that spaces remain unchanged.
-		return 32;
-	else {
-		char en_letter = ((letter - 65) + key + 2*26)%26 + 65; 
-		//Above line shifts letter by key amount along alphabet, uses modulus to ensure
-	    //'rotation' back into alphabet, then converts back to CAPS ASCII. Also adds
-		//26 to ensure term modulus affects is positive.
-		return en_letter;
-	}
+	if ((letter >= 97) && (letter <= 122))	// This if() converts all letters to uppercase.
+		letter = letter - 32;
+	else if ((letter < 65) || (letter > 90))	//This if() ensures that spaces and obscure symbols remain unchanged.
+		return letter;
+	char en_letter = ((letter - 65) + key + 2*26)%26 + 65; 
+	//Above line shifts letter by key amount along alphabet, uses modulus to ensure
+    //'rotation' back into alphabet, then converts back to CAPS ASCII. Also adds
+	//26 to ensure term modulus affects is positive.
+	return en_letter;
 }
 
 char sub_encrypt(char letter, const char *key) {
-	if (letter == ' ') //Ensures that spaces remain unchanged (note that using ' ' and 32 produce same result).
-		return ' ';
-	else {
-		int letter_index; //'letter_index' becomes int (0-25) representing letter's position in alphabet, e.g. 0 = A, 1 = B, etc..
-		letter_index = (letter - 65); //This works becuase in ASCII A = 65, B = 66, etc..
-		return key[letter_index]; //The letter in key holding the position 'letter' does in alphabet is returned.
-	}
+	if ((letter >= 97) && (letter <= 122))	// This if() converts all letters to uppercase.
+		letter = letter - 32;
+	else if ((letter < 65) || (letter > 90))	//This if() ensures that spaces and obscure symbols remain unchanged.
+		return letter;
+	int letter_index; //'letter_index' becomes int (0-25) representing letter's position in alphabet, e.g. 0 = A, 1 = B, etc..
+	letter_index = (letter - 65); //This works becuase in ASCII A = 65, B = 66, etc..
+	return key[letter_index]; //The letter in key holding the position 'letter' does in alphabet is returned.
 }
 
 char sub_decrypt(char letter, const char *key) {
-	if (letter == ' ') //Ensures that spaces remain unchanged.
-		return ' ';
-	else {
-		int index = 0; //Used as counter to iterate through checking each character in 'key' to find the letter matching 'letter'.
-		char letter_in_key = key[0]; //letter_in_key becomes each character in key.
-		while (letter_in_key) { //Will evaluate false when letter is null, i.e. at end of string.
-			if (letter_in_key == letter)
-				return (index + 65);
-			index++;
-			letter_in_key = key[index];
-		}
+	if ((letter >= 97) && (letter <= 122))	// This if() converts all letters to uppercase.
+		letter = letter - 32;
+	else if ((letter < 65) || (letter > 90))	//This if() ensures that spaces and obscure symbols remain unchanged.
+		return letter;
+	int index = 0; //Used as counter to iterate through checking each character in 'key' to find the letter matching 'letter'.
+	char letter_in_key = key[0]; //letter_in_key becomes each character in key.
+	while (letter_in_key) { //Will evaluate false when letter is null, i.e. at end of string.
+		if (letter_in_key == letter)
+			return (index + 65);
+		index++;
+		letter_in_key = key[index];
 	}
 }
