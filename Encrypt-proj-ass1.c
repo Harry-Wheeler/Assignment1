@@ -3,6 +3,7 @@
 char rot_cipher(char letter, int key); //Used for encryption and decryption of rotation cipher with key.
 char sub_encrypt(char letter, const char *key); //Used for encryption of substitution cipher with key.
 char sub_decrypt(char letter, const char *key); //Used for decryption of substitution cipher with key.
+int rot_attack(const char *message); //Returns key of rotation coded message.
 
 int main() {
 	int index = 0; //Used in each case to iterate through letters in input_string.
@@ -13,9 +14,9 @@ int main() {
 	
 	
 	//const char input_string[] = "WE should ATTACK NOW"; //Temporary measure to input an example message.
-	const char input_string[] = "NY GkcPMX JFfJZU DCN"; //Temporary measure to input an example sub coded message.
-	//const char input_string[] = "ZH VKRXOG DwwDfN QRZ"; //Temporary measure to input example rot coded message.
-	key = 3; //Temporary measure to input key for rotation cipher.
+	//const char input_string[] = "NY GkcPMX JFfJZU DCN"; //Temporary measure to input an example sub coded message.
+	const char input_string[] = "ZH VKRXOG DwwDfN QRZ"; //Temporary measure to input example rot coded message.
+	key = 12; //Temporary measure to input key for rotation cipher.
 	const char sub_key[26] = "JBZXYWVKAEUMLDCTIHGFPONSRQ"; //Temporary measure. Reordered alphabet used to scramble substitution cipher messages.
 	
 	printf("Select option (1-6)\n1 for rotation cipher encryption.\n2 for decryption of rotation cipher given key.\n3 for substitution cipher encryption. \n4 for decryption of substitution cipher given key. \n5 for decryption of rotation cipher without key. \n6 for decryption of substitution cipher without key. \nResponse: ");
@@ -83,7 +84,17 @@ int main() {
 			}
 			printf("Decrypted version: %s\n", output_string); //Prints resultant string.
 			break;
-		case 5: //call appropriate function.
+		case 5:
+			key = rot_attack(input_string);
+			//printf("The key is: %d", key);
+			char decrypted_message[250];
+			int counter = 0;
+			char letter = 1;
+			while (letter) {
+				decrypted_message[counter] = rot_cipher(input_string[counter], -key);
+				counter++;
+			}
+			printf("Decrypted version: %s\n", decrypted_message);
 			break;
 		case 6: //call appropriate function.
 			break;
@@ -143,4 +154,138 @@ char sub_decrypt(char letter, const char *key) {
 		index++;
 		letter_in_key = key[index];
 	}
+}
+
+int rot_attack(const char *message) {
+	char converted_message[250];
+	char d_word[150];
+	char word[150];
+	int i;
+	for (i = 0; i < 150; i++) {
+		word[i] = 0;
+		d_word[i] = 0;
+	}
+	/*FILE *message_stream;
+	message_stream = fopen("C:/Users/harry/Documents/Assignments/Assessment 1 ENGG1003/message.txt", "r");
+	if (message_stream == NULL)
+		printf("message file does not exist.\n");
+	const char message[1000] = {0};
+	int m_letter = 0;
+	while (m_letter != EOF)
+		dictionary[] */ 
+	int Lev_final = 0;
+	int key, key_final = 0;
+	for (key = 0; key < 26; key++) { //Per key
+		//fseek(dictionary_stream, 0, SEEK_SET);
+		static int letter_index1 = 0;
+		int Lev_key = 0, i = 0;
+		char letter1 = 1, letter, letter_from_message = 1;
+		while (letter1) {
+			letter1 = rot_cipher(message[i], (-key));
+			converted_message[i] = letter1;
+			i++;
+		}
+		while(letter_from_message != 0) { //Per word in message
+			int Lev_word = 0;
+			//printf("letter: %d\n", letter_from_message);
+			static char word_length = -1; //This fixes an offset by one error. Maybe its the first run through
+			static char d_word_length = 0;
+			int letter_index2 = 0;			
+			//printf("letter_index1: %d\n", letter_index1);
+			while((letter_from_message != ' ') && (letter_from_message != 0)) {
+				//letter_from_message = fgetc(message_stream);
+				letter_from_message = converted_message[letter_index1];
+				//printf("letter from message early on: '%c'\n", letter_from_message);
+				//if ((letter_from_message >= 97) && (letter_from_message <= 122)) //Don't need bc rot_cipher does it anyway.
+					//letter_from_message = letter_from_message - 32;
+				if (letter_from_message != ' ') // should replace with if a letter
+					word[letter_index2] = letter_from_message;
+					word_length++;
+				letter_index1++;
+				letter_index2++;
+				if (letter_from_message == ' ')
+					break;
+				}
+			//letter_index1++;
+			letter_from_message = converted_message[letter_index1];
+			//printf("%s", word);
+			FILE *dictionary_stream;
+			dictionary_stream = fopen("C:/Users/harry/Documents/Assignments/Assessment 1 ENGG1003/10000 words.txt", "r");
+			if (dictionary_stream == NULL)
+				printf("dictionary file does not exist.\n");
+			char d_letter_from_dic = 0, d_letter;
+			//printf("letter from dictionary: %d\n", d_letter_from_dic);
+			while(d_letter_from_dic != EOF) {
+				int d_letter_index = 0;
+				//printf("d_letter_from_dic: %c\n", d_letter_from_dic);
+				while(isspace(d_letter_from_dic) == 0) { //While its an actual letter rather than space, newline, etc.
+					//printf("%c", d_letter_from_dic);
+					if ((d_letter_from_dic >= 97) && (d_letter_from_dic <= 122))
+						d_letter_from_dic = d_letter_from_dic - 32;
+					//printf("current d_letter: %c\n", d_letter_from_dic);
+					d_word[d_letter_index] = d_letter_from_dic;
+					d_word_length++;
+					//printf("d_word: %s\n", d_word);
+					//printf("%c", d_word[d_letter_index]);
+					//printf("%s\n", d_word);
+					d_letter_from_dic = fgetc(dictionary_stream);
+					d_letter_index++;
+				}
+				//printf("d_letter_from_dic: %d\n", d_letter_from_dic);
+				//printf("Checking key of %d... word: %s, d_word: %s\n", key, word, d_word);
+				if (isspace(d_letter_from_dic) == 0) //I don't know why this if() works but it does.
+					d_letter_from_dic = fgetc(dictionary_stream);
+				letter = 67;
+				d_letter = 1; //There was a problem here, letter variebles reused when they were needed to control overarching loop. Now note distiction between d_letter and d_letter_from dic, and letter and letter_from_message.
+				int letter_index = 0;
+				//printf("word: %s, length: %d\nd_word: %s, length: %d\n", word, word_length, d_word, d_word_length);
+				if (word_length == d_word_length) {
+					static int Lev = 0;
+					letter = word[letter_index];
+					//printf("Checking if word is done: %d.\n", letter);
+					while (letter) {
+						d_letter = d_word[letter_index];
+						//printf("word: %s, d_word: %s.\n", word, d_word);
+						//printf("current d_letter: %c\n", d_letter);
+						if (letter == d_letter)
+							Lev++;
+						letter_index++;	
+						letter = word[letter_index];
+					}
+					if (Lev > Lev_word)
+						Lev_word = Lev;
+					Lev = 0;
+					//printf("Checking key of %d... word: %s, d_word: %s. Lev: %d, Lev_word: %d, Lev_key: %d, Lev_final: %d, key_final: %d\n", key, word, d_word, Lev, Lev_word, Lev_key, Lev_final, key_final);
+				}
+				//printf("d_word resetting.\n");
+				d_word_length = 0;
+				for (i = 0; i < 150; i++) {
+					d_word[i] = 0;
+				}
+				//printf("d_letter_from_dic: %c\n", d_letter_from_dic);
+				d_letter_from_dic = fgetc(dictionary_stream);
+				//printf("current d_letter: %c\n", d_letter_from_dic);
+			}
+			//printf("word and d_word resetting.\n");
+			word_length = -1; //This fixes an offset by one error. Maybe its the first run through
+			for (i = 0; i < 150; i++) {
+				word[i] = 0;
+				d_word[i] = 0;
+			}
+			Lev_key += Lev_word;
+			Lev_word = 0;
+		}
+		//printf("poop\n");
+		if (Lev_key > Lev_final) {
+			Lev_final = Lev_key;
+			key_final = key;
+		}
+		//printf("key_final: %d\n", key_final);
+		Lev_key = 0;
+		letter_index1 = 0;
+		for (i = 0; i < 250; i++) {
+			converted_message[i] = 0;
+		}
+	}
+	return key_final;
 }
