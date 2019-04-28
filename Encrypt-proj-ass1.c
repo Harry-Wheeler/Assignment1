@@ -15,8 +15,8 @@ int main() {
 	char sub_key_get;
 	int useless;
 	//const char input_string[200] = {0}; //This becomes length limit to input.
-	char output_string[250] = {0}; //This value is the limit to message length
-	char input_string[250] = {0};
+	char output_string[9500] = {0}; //This value is the limit to message length
+	char input_string[9500] = {0};
 	char sub_key[30] = {0};
 	char lit_key[6] = {0};
 	
@@ -108,8 +108,6 @@ int main() {
 				index++;
 				sub_key_get = fgetc(input_string_stream);
 			}
-			
-			
 			index = 0; //Counter to iterate through letters in message.
 			letter = fgetc(input_string_stream); //letter set to first character in message.
 			while(letter != EOF) {
@@ -127,8 +125,6 @@ int main() {
 				index++;
 				sub_key_get = fgetc(input_string_stream);
 			}
-			
-			
 			index = 0; //Counter to iterate through letters in message.
 			letter = fgetc(input_string_stream); //letter set to first character in message.
 			while(letter != EOF) {
@@ -147,13 +143,14 @@ int main() {
 				letter = fgetc(input_string_stream);
 			}
 			key = rot_attack(input_string);
-			//printf("The key is: %d", key);
-			char decrypted_message[250];
+			printf("The key is: %d\n", key);
+			char decrypted_message[9500] = {0};
 			int counter = 0;
 			char letter = 1;
 			while (letter) {
 				decrypted_message[counter] = rot_cipher(input_string[counter], -key);
 				counter++;
+				letter = input_string[counter];
 			}
 			printf("Decrypted version: %s\n", decrypted_message);
 			break;
@@ -183,7 +180,7 @@ decryption, key is made negative before the function is run.*/
 char rot_cipher(char letter, int key) { //'letter' is letter to be encrypted, 'key' is distance letters will shift along alphabet.
 	if ((letter >= 97) && (letter <= 122))	// This if() converts all letters to uppercase.
 		letter = letter - 32;
-	else if ((letter < 65) || (letter > 90))	//This if() ensures that spaces and obscure symbols remain unchanged.
+	if ((letter < 65) || (letter > 90))	//This if() ensures that spaces and obscure symbols remain unchanged.
 		return letter;
 	char en_letter = ((letter - 65) + key + 2*26)%26 + 65; 
 	//Above line shifts letter by key amount along alphabet, uses modulus to ensure
@@ -218,7 +215,7 @@ char sub_decrypt(char letter, const char *key) {
 }
 
 int rot_attack(const char *message) {
-	char converted_message[250];
+	char converted_message[9500];
 	char d_word[150];
 	char word[150];
 	int i;
@@ -230,7 +227,7 @@ int rot_attack(const char *message) {
 	message_stream = fopen("C:/Users/harry/Documents/Assignments/Assessment 1 ENGG1003/message.txt", "r");
 	if (message_stream == NULL)
 		printf("message file does not exist.\n");
-	const char message[1000] = {0};
+	const char message[9500] = {0};
 	int m_letter = 0;
 	while (m_letter != EOF)
 		dictionary[] */ 
@@ -246,7 +243,11 @@ int rot_attack(const char *message) {
 			converted_message[i] = letter1;
 			i++;
 		}
-		while(letter_from_message != 0) { //Per word in message
+		//while(letter_from_message != 0) { //Per word in message
+		int rep;
+		for (rep = 0; rep < 50; rep++) {
+			if (letter_from_message == 0)
+				break;
 			int Lev_word = 0;
 			//printf("letter: %d\n", letter_from_message);
 			static char word_length = -1; //This fixes an offset by one error. Maybe its the first run through
@@ -270,10 +271,15 @@ int rot_attack(const char *message) {
 			//letter_index1++;
 			letter_from_message = converted_message[letter_index1];
 			//printf("%s", word);
+			//printf("poop\n");
+			//static int counter5 = 0;
+			//counter5++;
+			//printf("%d\n", counter5);
 			FILE *dictionary_stream;
 			dictionary_stream = fopen("C:/Users/harry/Documents/Assignments/Assessment 1 ENGG1003/10000 words.txt", "r");
 			if (dictionary_stream == NULL)
 				printf("dictionary file does not exist.\n");
+				//dictionary_stream = fopen("C:/Users/harry/Documents/Assignments/Assessment 1 ENGG1003/10000 words.txt", "r");
 			char d_letter_from_dic = 0, d_letter;
 			//printf("letter from dictionary: %d\n", d_letter_from_dic);
 			while(d_letter_from_dic != EOF) {
@@ -335,6 +341,7 @@ int rot_attack(const char *message) {
 			}
 			Lev_key += Lev_word;
 			Lev_word = 0;
+			fclose(dictionary_stream);
 		}
 		//printf("poop\n");
 		if (Lev_key > Lev_final) {
@@ -344,7 +351,7 @@ int rot_attack(const char *message) {
 		//printf("key_final: %d\n", key_final);
 		Lev_key = 0;
 		letter_index1 = 0;
-		for (i = 0; i < 250; i++) {
+		for (i = 0; i < 9500; i++) {
 			converted_message[i] = 0;
 		}
 	}
