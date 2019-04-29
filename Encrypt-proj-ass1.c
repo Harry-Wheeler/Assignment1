@@ -41,7 +41,7 @@ int main() {
 	
 //MAIN BODY---------------------------------------------------------------------------------------------------------------
 	FILE *input_string_stream; //Will be stream from user's .txt file.
-	input_string_stream = fopen("input_string5.txt", "r"); //Opens user's .txt file for reading.
+	input_string_stream = fopen("input_string.txt", "r"); //Opens user's .txt file for reading.
 	if (input_string_stream == NULL) //This if() verifies that the file has been found.
 		printf("Input string file does not exist.\n");
 	int menu_response = fgetc(input_string_stream);	//First character in file assumed to be choice of operation.
